@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Add this permissions block
+    permissions:
+      contents: write
 
     steps:
       # 1. Checks out your repository code so the action can access it
