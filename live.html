@@ -53,7 +53,7 @@
   // Fetch currently live streams
   async function fetchLiveStreams() {
     // This URL will point to the cache file hosted on a service like GitHub Pages
-    const cacheUrl = './live_cache.json'; // Or a full URL like https://your-name.github.io/repo/live_cache.json
+    const cacheUrl = 'https://ehowsecunderabad.github.io/site/live_cache.json';
     
     // Add a cache-busting query parameter
     const res = await fetch(`${cacheUrl}?t=${new Date().getTime()}`);
