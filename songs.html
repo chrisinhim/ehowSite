@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Library</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --font-color: #333;
+            --white: #fff;
+            --lyrics-font-size: 16px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--font-color);
+        }
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .search-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #search-bar {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border: none;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--primary-color);
+        }
+        #song-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .song-item {
+            background-color: var(--white);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .song-item:hover {
+            transform: scale(1.02);
+        }
+        #lyrics-view {
+            display: none;
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        #lyrics-content {
+            white-space: pre-wrap;
+            font-size: var(--lyrics-font-size);
+            line-height: 1.6;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .font-size-controls button, .back-btn {
+            padding: 8px 12px;
+            border: none;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="main-view">
+        <h1>Song Library</h1>
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search songs...">
+        </div>
+        <div id="language-filters" class="filter-container"></div>
+        <ul id="song-list"></ul>
+    </div>
+
+    <div id="lyrics-view">
+        <div class="controls">
+            <button id="back-to-list" class="back-btn">Back to List</button>
+            <div class="font-size-controls">
+                <button id="decrease-font">-</button>
+                <button id="increase-font">+</button>
+            </div>
+        </div>
+        <h2 id="lyrics-title"></h2>
+        <p id="lyrics-content"></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const songListEl = document.getElementById('song-list');
+        const searchBar = document.getElementById('search-bar');
+        const langFiltersEl = document.getElementById('language-filters');
+        
+        const mainView = document.getElementById('main-view');
+        const lyricsView = document.getElementById('lyrics-view');
+        const lyricsTitle = document.getElementById('lyrics-title');
+        const lyricsContent = document.getElementById('lyrics-content');
+        const backBtn = document.getElementById('back-to-list');
+        
+        const increaseFontBtn = document.getElementById('increase-font');
+        const decreaseFontBtn = document.getElementById('decrease-font');
+
+        let songs = [];
+        let currentFilter = 'All';
+        let currentFontSize = 16;
+
+        async function fetchSongs() {
+            try {
+                // IMPORTANT: Replace 'song-list.json' with the raw URL of your manifest file on GitHub
+                const manifestResponse = await fetch('song-list.json');
+                const songFiles = await manifestResponse.json();
+
+                const songPromises = songFiles.map(async (filename) => {
+                    const parts = filename.replace('.txt', '').split(' - ');
+                    const language = parts[0];
+                    const title = parts.slice(1).join(' - ');
+                    
+                    // IMPORTANT: Ensure the path is correct when hosting
+                    const songResponse = await fetch(`songs/${filename}`);
+                    const lyrics = await songResponse.text();
+
+                    return { title, language, lyrics };
+                });
+
+                songs = await Promise.all(songPromises);
+
+                renderLanguages();
+                renderSongList();
+            } catch (error) {
+                console.error('Error fetching songs:', error);
+                songListEl.innerHTML = '<li>Error loading songs. Please check your `song-list.json` and `songs` directory.</li>';
+            }
+        }
+
+        function renderLanguages() {
+            const languages = ['All', ...new Set(songs.map(song => song.language))];
+            langFiltersEl.innerHTML = '';
+            languages.forEach(lang => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.textContent = lang;
+                if (lang === currentFilter) {
+                    btn.classList.add('active');
+                }
+                btn.addEventListener('click', () => {
+                    currentFilter = lang;
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderSongList();
+                });
+                langFiltersEl.appendChild(btn);
+            });
+        }
+
+        function renderSongList() {
+            const searchTerm = searchBar.value.toLowerCase();
+            const filteredSongs = songs.filter(song => {
+                const inLanguage = currentFilter === 'All' || song.language === currentFilter;
+                const inSearch = song.title.toLowerCase().includes(searchTerm) || song.lyrics.toLowerCase().includes(searchTerm);
+                return inLanguage && inSearch;
+            });
+
+            songListEl.innerHTML = '';
+            if (filteredSongs.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'No songs found.';
+                songListEl.appendChild(li);
+                return;
+            }
+
+            filteredSongs.forEach(song => {
+                const li = document.createElement('li');
+                li.className = 'song-item';
+                li.textContent = song.title;
+                li.dataset.title = song.title;
+                li.addEventListener('click', () => showLyrics(song));
+                songListEl.appendChild(li);
+            });
+        }
+        
+        function showLyrics(song) {
+            mainView.style.display = 'none';
+            lyricsView.style.display = 'block';
+            lyricsTitle.textContent = song.title;
+            lyricsContent.textContent = song.lyrics;
+        }
+
+        function showMainView() {
+            lyricsView.style.display = 'none';
+            mainView.style.display = 'block';
+        }
+
+        function changeFontSize(amount) {
+            currentFontSize += amount;
+            document.documentElement.style.setProperty('--lyrics-font-size', `${currentFontSize}px`);
+        }
+
+        searchBar.addEventListener('input', renderSongList);
+        backBtn.addEventListener('click', showMainView);
+        increaseFontBtn.addEventListener('click', () => changeFontSize(2));
+        decreaseFontBtn.addEventListener('click', () => changeFontSize(-2));
+
+        fetchSongs();
+    });
+</script>
+
+</body>
+</html>

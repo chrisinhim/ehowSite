@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Amazing Grace",
+    "language": "English",
+    "lyrics": "Amazing grace! How sweet the sound\nThat saved a wretch like me!\nI once was lost, but now am found;\nWas blind, but now I see."
+  },
+  {
+    "title": "Cielito Lindo",
+    "language": "Spanish",
+    "lyrics": "Ay, ay, ay, ay\nCanta y no llores\nPorque cantando se alegran\nCielito lindo, los corazones"
+  },
+  {
+    "title": "Frère Jacques",
+    "language": "French",
+    "lyrics": "Frère Jacques, Frère Jacques,\nDormez-vous? Dormez-vous?\nSonnez les matines, sonnez les matines\nDing, dang, dong. Ding, dang, dong."
+  },
+  {
+    "title": "Ode to Joy",
+    "language": "English",
+    "lyrics": "Joyful, joyful, we adore thee,\nGod of glory, Lord of love;\nHearts unfold like flowers before thee,\nOpening to the sun above."
+  },
+  {
+    "title": "La Bamba",
+    "language": "Spanish",
+    "lyrics": "Para bailar La Bamba\nPara bailar La Bamba se necesita una poca de gracia\nUna poca de gracia pa' mí pa' ti\nArriba y arriba"
+  },
+  {
+    "title": "Alouette",
+    "language": "French",
+    "lyrics": "Alouette, gentille alouette\nAlouette, je te plumerai\nJe te plumerai la tête\nEt la tête! Et la tête!"
+  }
+]
