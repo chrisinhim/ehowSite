@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'songs/**.txt'
+      - '.github/workflows/update-songs.yml'
   workflow_dispatch:
 
 jobs:
@@ -23,6 +24,7 @@ jobs:
 
       - name: Run script to update songs.json
         id: update_script
+        shell: python
         run: |
           import json
           import os
@@ -63,7 +65,7 @@ jobs:
           with open(songs_json_path, 'w', encoding='utf-8') as f:
               json.dump(songs, f, indent=2, ensure_ascii=False)
 
-          echo "songs.json updated successfully."
+          print("songs.json updated successfully.")
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
