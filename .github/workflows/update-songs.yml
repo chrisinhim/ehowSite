@@ -46,19 +46,19 @@ jobs:
                   title_match = re.search(r'\[TITLE\]\s*(.*)', content)
                   title = title_match.group(1).strip() if title_match else 'Unknown Title'
 
-                    # Determine language from [LANGUAGE] metadata if present.
-                    # Fallback to heuristics (unicode ranges / filename) when missing.
-                    lang_match = re.search(r'\[LANGUAGE\]\s*(.+)', content, re.IGNORECASE)
-                    if lang_match:
+                  # Determine language from [LANGUAGE] metadata if present.
+                  # Fallback to heuristics (unicode ranges / filename) when missing.
+                  lang_match = re.search(r'\[LANGUAGE\]\s*(.+)', content, re.IGNORECASE)
+                  if lang_match:
                       language = lang_match.group(1).strip()
-                    else:
+                  else:
                       language = 'English' # Default fallback
                       if re.search(r'[\u0C00-\u0C7F]', title): # Check for Telugu characters in title
-                        language = 'Telugu'
+                          language = 'Telugu'
                       elif re.search(r'[\u0900-\u097F]', title): # Check for Hindi characters in title
-                        language = 'Hindi'
+                          language = 'Hindi'
                       elif 'English -' in filename:
-                        language = 'English'
+                          language = 'English'
 
                   songs.append({
                       'id': song_id,
