@@ -46,7 +46,6 @@ jobs:
       # 4. Runs your script, passing the secrets as environment variables
       - name: Run cache update script
         env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
         run: node update-cache.js
 

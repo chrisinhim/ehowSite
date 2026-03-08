@@ -9,4 +9,7 @@
 6. create and publish church events
 7. Get reminders for planning for future events
 8. event planning assistance
-9.
+9. publish ads about public events and old books availability
+10. set reminders about plannings and meetings
+11. publish articles
+12.
